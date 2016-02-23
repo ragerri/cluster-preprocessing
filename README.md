@@ -83,7 +83,7 @@ cat *.tok > corpus-preclean.tok
 ````shell
 ./brown-clusters-preprocess.sh corpus-preclean.tok > corpus-preclean.tok.punct
 ````
-+ Induce brown clusters:
+### Induce Brown clusters:
 
 ````shell
 brown-cluster/wcluster --text corpus-preclean.tok.punct --c 1000 --threads 8
@@ -92,7 +92,28 @@ This trains 1000 class Brown clusters using 8 threads in parallel.
 
 ## Clark
 
+### Train Clark clusters:
+
+````shell
+cluster_neyessenmorph -s 5 -m 5 -i 10 corpus.tok.punct.lower - 600 > corpus.tok.punct.lower.600
+````
+
 ## Word2vec
+
+````shell
+word2vec/word2vec -train corpus-word2vec.txt -output corpus-s50-w5.400 -cbow 0 -size 50 -window 5 -negative 0 -hs 1 -sample 1e-3 -threads 8 -classes 400
+````
+
+## Cleaning XML, HTML and other formats
+
+xml_clean_dir.py
+
+already extracted wikipedia dumps into xml
+http://linguatools.org/tools/corpora/wikipedia-monolingual-corpora/
+
+http://medialab.di.unipi.it/wiki/Wikipedia_Extractor
+
+
 
 ## Contact information
 
