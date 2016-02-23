@@ -34,7 +34,7 @@ We induce the following clustering types:
   + We use [Alexander Clark's implementation](https://github.com/ninjin/clark_pos_induction) off-the-shelf.
 
 + **Word2vec Skip-gram word embeddings clustered via K-Means**: [Mikolov et al. (2013). Efficient estimation of word representations in Vector Space.](http://arxiv.org/pdf/1301.3781.pdf)
-  + Input: lowercased tokens separated by space, punctuation removed. See [word2vec-input.txt](https://github.com/ragerri/cluster-preprocessing/blob/master/examples/word2vec-input)
+  + Input: lowercased tokens separated by space, punctuation removed. See [word2vec-input.txt](https://github.com/ragerri/cluster-preprocessing/blob/master/examples/word2vec-input.txt)
   + Output: for each word type, its cluster. See [word2vec-output.txt](https://github.com/ragerri/cluster-preprocessing/blob/master/examples/word2vec-output.txt)
   + Each line consists of
   ````shell
