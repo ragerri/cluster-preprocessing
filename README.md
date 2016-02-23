@@ -6,13 +6,7 @@ This README explains the pre-processing performed to create the cluster lexicons
 ## TABLE OF CONTENTS
 
 1. [Overview](#overview)
-  + [Distributed models](#models)
-  + [Distributed resources](#resources)
 2. [Brown clusters](#brown)
-  + [POS tagging/lemmatizing](#tagging)
-  + [Server mode](#server)
-  + [Training your own models](#training)
-  + [Evaluation](#evaluation)
 3. [Clark clusters](#clark)
 4. [Word2vec clusters](#word2vec)
 
@@ -20,59 +14,37 @@ This README explains the pre-processing performed to create the cluster lexicons
 
 We induce the following clustering types:
 
-+ **Brown hierarchical word clustering algorithm**: [Brown, et al.: Class-Based n-gram Models of Natural Language](http://acl.ldc.upenn.edu/J/J92/J92-4003.pdf)
++ **Brown hierarchical word clustering algorithm**: [Brown, et al.: Class-Based n-gram Models of Natural Language.](http://acl.ldc.upenn.edu/J/J92/J92-4003.pdf)
   + Input: a sequence of words separated by whitespace with no punctuation. See [brown-input.txt](https://github.com/percyliang/brown-cluster/blob/master/input.txt) for an example.
   + Output: for each word type, its cluster. See [brown-output.txt](https://github.com/percyliang/brown-cluster/blob/master/output.txt) for an example.
   + In particular, each line is:
+  ````shell
   <cluster represented as a bit string> <word> <number of times word occurs in input>
-  + Runs in $O(N C^2)$, where $N$ is the number of word types and $C$ is the number of clusters.
+  ````
   + We use [Percy Liang's implementation](https://github.com/percyliang/brown-cluster) off-the-shelf. 
   + (Liang: Semi-supervised learning for natural language processing)[http://cs.stanford.edu/~pliang/papers/meng-thesis.pdf]
 
 + **Clark clustering**: [Alexander Clark (2003). Combining distributional and morphological information for part of speech induction](http://www.aclweb.org/anthology/E03-1009).
   + Input: one lowercased token per line, punctuation removed, sentences separated by two newlines. See [clark-input.txt]((https://github.com/ragerri/cluster-preprocessing/examples/clark-input.txt)
   + Output: for each word type, its cluster and a weight. See [clark-output.txt](https://github.com/ragerri/cluster-preprocessing/examples/clark-output.txt)
-  + Each line consists of <word> <cluster> <weight>
-  + Runs in $O(N C^2)$, where $N$ is the number of word types and $C$ is the number of clusters.
+  + Each line consists of
+  ````shell
+  <word> <cluster> <weight>
+  ````
   + We use [Alexander Clark's implementation](https://github.com/ninjin/clark_pos_induction) off-the-shelf.
 
-+ **Word2vec Skip-gram word embeddings clustered via K-Means**: [Mikolov et al. (2013). Efficient estimation of word representations in Vector Space](http://arxiv.org/pdf/1301.3781.pdf)
-  + Input: 
++ **Word2vec Skip-gram word embeddings clustered via K-Means**: [Mikolov et al. (2013). Efficient estimation of word representations in Vector Space.](http://arxiv.org/pdf/1301.3781.pdf)
+  + Input: lowercased tokens separated by space, punctuation removed. See [word2vec-input.txt](https://github.com/ragerri/cluster-preprocessing/examples/word2vec-input.txt)
+  + Output: for each word type, its cluster. See [word2vec-output.txt](https://github.com/ragerri/cluster-preprocessing/examples/word2vec-output.txt)
+  + Each line consists of
+  ````shell
+  <word> <cluster>
+  ````
+  + We use [Word2vec implementation](https://code.google.com/archive/p/word2vec/) off-the-shelf. 
 
-To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, post-processing via tag dictionaries, etc., as described below.
+## Brown
 
-**ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details)**.
-
-### Models
-
-+ Universal Dependencies Models: Basque, English and Italian.
-  + [ud-morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/ud-morph-models-1.5.0.tar.gz).
-+ Language Specific Models: Dutch, English, French, Galician, German, Spanish.
-  + [morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/morph-models-1.5.0.tar.gz)
-
-Remember that for Galician and Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag** CLI option.
-
-### Resources
-
-We provide some dictionaries to modify the output of the statistical tagger and lemmatizer. To use them, pllease get and **unpack** the contents of this tarball in the **src/main/resources/** directory inside ixa-pipe-pos **before compilation**: 
-
-+ [lemmatizer-dicts.tar.gz](http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tar.gz)
-package. Note that the dictionaries come with their own licences, please do comply with them:
-
-  + **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the [morfologik-stemming project](https://github.com/morfologik/morfologik-stemming):
-    + english.dict, galician.dict, spanish.dict. Via API you can also pass a plain text dictionary of the same tabulated format.
-
-  + **Multiword Dictionaries**: "multi#word\tab\multi#lemma\tab\postag\tabambiguity" dictionaries to detect multiword expressions. Currently vailable:
-    + es-locutions.dict for **Spanish** and gl-locutions.dict in **Galician**.
-
-  + **Monosemic Tag Dictionaries**: the monosemic versions of the lemmatizer dictionaries. This is used for post-processing the results of the POS tagger if and when the option **--dictag** is activated in CLI. Currently available:
-    + spanish-monosemic.dict, galician-monosemic.dict.
-
-To use them, to download the package, copy it and untar it into the src/main/resources directory **before compilation**.
-
-## USAGE
-
-ixa-pipe-pos provides the following functionalities:
+The following steps are performed:
 
 1. **server**: starts a TCP service loading the model and required resources.
 2. **client**: sends a NAF document to a running TCP server.
