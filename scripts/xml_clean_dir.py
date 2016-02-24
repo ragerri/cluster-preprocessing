@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Cleans xml tags for every file in a given directory. It also works taking a file as an input. 
-Usage: python xml_clean_dir.py dir|file 
+Cleans xml tags for every file in a given directory. It also works taking a file as an input.
+Usage: python xml_clean_dir.py dir|file
 
-Rodrigo Agerri (ragerri@vicomtech.org)
+Rodrigo Agerri (ragerri@apache.org)
 24/10/2010
 """
 
@@ -22,7 +22,7 @@ badrexml = re.compile(r"<.*")# target bad remaining XML tags
 def progressdot():
     sys.stdout.write(".")
     sys.stdout.flush()
-    #time.sleep(.1) 
+    #time.sleep(.1)
 
 def clean_dir(intext):
     for dirpath, dirs, docs in os.walk(intext):
@@ -43,7 +43,7 @@ def clean_dir(intext):
             for line in tnt:
                 outfile.write(line +"\n")
             outfile.close()
-    
+
 def clean_file(intext):
     infile = open(intext).readlines()
     infile = "".join(infile)

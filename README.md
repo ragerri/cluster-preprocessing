@@ -9,6 +9,7 @@ This README explains the pre-processing performed to create the cluster lexicons
 2. [Brown clusters](#brown)
 3. [Clark clusters](#clark)
 4. [Word2vec clusters](#word2vec)
+5. [XML/HTML cleaning](#cleaning)
 
 ## OVERVIEW
 
@@ -21,7 +22,7 @@ We induce the following clustering types:
   ````shell
   <cluster represented as a bit string> <word> <number of times word occurs in input>
   ````
-  + We use [Percy Liang's implementation](https://github.com/percyliang/brown-cluster) off-the-shelf. 
+  + We use [Percy Liang's implementation](https://github.com/percyliang/brown-cluster) off-the-shelf.
   + [Liang: Semi-supervised learning for natural language processing.](http://cs.stanford.edu/~pliang/papers/meng-thesis.pdf)
 
 + **Clark clustering**: [Alexander Clark (2003). Combining distributional and morphological information for part of speech induction](http://www.aclweb.org/anthology/E03-1009).
@@ -40,7 +41,7 @@ We induce the following clustering types:
   ````shell
   <word> <cluster>
   ````
-  + We use [Word2vec implementation](https://code.google.com/archive/p/word2vec/) off-the-shelf. 
+  + We use [Word2vec implementation](https://code.google.com/archive/p/word2vec/) off-the-shelf.
 
 ## Brown
 
@@ -92,13 +93,71 @@ This trains 1000 class Brown clusters using 8 threads in parallel.
 
 ## Clark
 
-### Train Clark clusters:
+Let us assume that the source data is in plain text format (e.g., without html or xml tags, etc.), and that every document is in a directory called *corpus-directory*. Then the following steps are performed:
+
+### Tokenize clean files to oneline format
+
++ Tokenize all the files in the folder to one line per sentence. This step is performed by using [ixa-pipe-tok](https://github.com/ixa-ehu/ixa-pipe-tok) in the following shell script:
 
 ````shell
-cluster_neyessenmorph -s 5 -m 5 -i 10 corpus.tok.punct.lower - 600 > corpus.tok.punct.lower.600
+./recursive-tok.sh $lang corpus-directory
+````
+The tokenized version of each file in the directory *corpus-directory* will be saved with a *.tok* suffix.
+
++ **cat to one large file**: all the tokenize files are concatenate it into a large huge file called *corpus.tok*.
+
+````shell
+cd corpus-directory
+cat *.tok > corpus.tok
+````
+
+### Format the corpus
+
++ Run the clark-clusters-preprocess.sh script like this to create the format required to induce Clark clusters using [Clark's implementation](https://github.com/ninjin/clark_pos_induction).
+
+````shell
+./clark-clusters-preprocess.sh corpus.tok > corpus.tok.punct.lower
+````
+
+### Train Clark clusters:
+
+To train 100 word clusters use the following command line:
+
+````shell
+cluster_neyessenmorph -s 5 -m 5 -i 10 corpus.tok.punct.lower - 100 > corpus.tok.punct.lower.100
 ````
 
 ## Word2vec
+
+Assuming that the source data is in plain text format (e.g., without html or xml tags, etc.), and that every document is in a directory called *corpus-directory*. Then the following steps are performed:
+
+### Tokenize clean files to oneline format
+
++ Tokenize all the files in the folder to one line per sentence. This step is performed by using [ixa-pipe-tok](https://github.com/ixa-ehu/ixa-pipe-tok) in the following shell script:
+
+````shell
+./recursive-tok.sh $lang corpus-directory
+````
+The tokenized version of each file in the directory *corpus-directory* will be saved with a *.tok* suffix.
+
++ **cat to one large file**: all the tokenize files are concatenate it into a large huge file called *corpus.tok*.
+
+````shell
+cd corpus-directory
+cat *.tok > corpus.tok
+````
+
+### Format the corpus
+
++ Run the word2vec-clusters-preprocess.sh script like this to create the format required by [Word2vec](https://code.google.com/archive/p/word2vec/).
+
+````shell
+./word2vec-clusters-preprocess.sh corpus.tok > corpus-word2vec.txt
+````
+
+### Train K-means clusters on top of word2vec word embeddings
+
+To train 400 class clusters using 8 threads in parallel we use the following command:
 
 ````shell
 word2vec/word2vec -train corpus-word2vec.txt -output corpus-s50-w5.400 -cbow 0 -size 50 -window 5 -negative 0 -hs 1 -sample 1e-3 -threads 8 -classes 400
@@ -106,14 +165,22 @@ word2vec/word2vec -train corpus-word2vec.txt -output corpus-s50-w5.400 -cbow 0 -
 
 ## Cleaning XML, HTML and other formats
 
-xml_clean_dir.py
+There are many ways of cleaning XML, HTML and other metadata than often comes in corpora. As we will usually be processing very large amounts of texts, we do not pay too much attention to detail and crudely remove every tag using regular expressions. In the scripts directory there is a python script that takes either a file or a directory as argument like this:
 
-already extracted wikipedia dumps into xml
-http://linguatools.org/tools/corpora/wikipedia-monolingual-corpora/
+````shell
+python xml_clean_dir.py corpus-directory/
+````
+**NOTE that this script will replace your original files with a cleaned version of them**.
 
-http://medialab.di.unipi.it/wiki/Wikipedia_Extractor
+### Wikipedia
 
+If you are interested in using the Wikipedia for your language, here you can find many Wikipedia dumps already extracted to XML which can be directly fed to the xml_clean_dir.py script:
 
+[http://linguatools.org/tools/corpora/wikipedia-monolingual-corpora/]
+
+If your language is not among them, we usually use the Wikipedia Extractor and then the xml_clean_dir.py script:
+
+[http://medialab.di.unipi.it/wiki/Wikipedia_Extractor]
 
 ## Contact information
 
