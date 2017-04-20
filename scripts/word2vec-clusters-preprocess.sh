@@ -4,5 +4,4 @@
 
 file=$1
 
-cat $file | sed 's/ /\n/g' | sed '/^[[:punct:]]/d' | awk ' { print tolower($0) } ' | perl -pe 's/\n/ /g' | tr -s " "
-
+sed 's/ /\n/g' $file | sed '/^[[:punct:]]/d' | awk ' { print tolower($0) } ' | tr "\n" " " | tr -s " "

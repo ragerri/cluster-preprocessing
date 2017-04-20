@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#input is tokenized text one sentence per line.
-
 file=$1
 
-cat $file | sed 's/ /\n/g' | sed '/^[[:punct:]]/d' | awk ' { print tolower($0) } '
-
+sed 's/ /\n/g' $file | sed '/^[[:punct:]]/d' | awk ' { print tolower($0) } ' | sed 's/^[[:blank:]]*//g' | sed 's/[[:blank:]]*$//g' | tr -s " "
