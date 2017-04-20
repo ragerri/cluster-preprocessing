@@ -165,20 +165,20 @@ word2vec/word2vec -train corpus-word2vec.txt -output corpus-s50-w5.400 -cbow 0 -
 
 ## Cleaning XML, HTML and other formats
 
-There are many ways of cleaning XML, HTML and other metadata than often comes in corpora. As we will usually be processing very large amounts of texts, we do not pay too much attention to detail and crudely remove every tag using regular expressions. In the scripts directory there is a python script that takes either a file or a directory as argument like this:
+There are many ways of cleaning XML, HTML and other metadata than often comes in corpora. As we will usually be processing very large amounts of texts, we do not pay too much attention to detail and crudely remove every tag using regular expressions. In the scripts directory there is a shell script that takes either a file as argument like this:
 
 ````shell
-python xml_clean_dir.py corpus-directory/
+./xmltotext.sh file.html > file.txt
 ````
 **NOTE that this script will replace your original files with a cleaned version of them**.
 
 ### Wikipedia
 
-If you are interested in using the Wikipedia for your language, here you can find many Wikipedia dumps already extracted to XML which can be directly fed to the xml_clean_dir.py script:
+If you are interested in using the Wikipedia for your language, here you can find many Wikipedia dumps already extracted to XML which can be directly fed to the xmltotext.sh script:
 
 [http://linguatools.org/tools/corpora/wikipedia-monolingual-corpora/]
 
-If your language is not among them, we usually use the Wikipedia Extractor and then the xml_clean_dir.py script:
+If your language is not among them, we usually use the Wikipedia Extractor and then the xmltotext.sh script:
 
 [http://medialab.di.unipi.it/wiki/Wikipedia_Extractor]
 
